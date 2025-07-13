@@ -1,21 +1,26 @@
 entities:
-  - name: SampleEntity
+  - name: CreditRetirement
     params:
-      - name: PrimaryEntity
+      - name: id
         primary: true
         type: string
-      - name: NonPrimaryEntity
+      - name: amount
+        primary: false
+        type: u64
+      - name: verifier
         primary: false
         type: string
+      - name: retiredBy
+        primary: false
+        type: string
+      - name: timestamp
+        primary: false
+        type: u64
+
 eventHandlers:
-  - event: U64Event(data u64,label indexed string)
-    handler: handleU64Event
-  - event: StringEvent(id u64,data string,label indexed string)
-    handler: handleStringEvent
-  - event: PubkeyEvent(id u64,data publicKey,label indexed string)
-    handler: handlePubkeyEvent
-  - event: U8Event(id u64,data u8,label indexed string)
-    handler: handleU8Event
+  - event: RetireCredit(id string, amount u64, verifier string, retiredBy string, timestamp u64)
+    handler: handleRetireCredit
+
 pollingInterval: 10000
-programId: 9XRQ3Wwv1Bawt1WPbp8yX8k4r6eM2ZZQyukFxJxAFtsq
+programId: 4NwR38YG7r4XuzVGu8ZdYLVW58kuri2qahnyAVVMR7g9
 startSlot: 168891968
