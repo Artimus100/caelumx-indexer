@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Existing models (unchanged)
+model Account {
+  id         Int      @id @default(autoincrement())
+  pubkey     Bytes?
+  owner      Bytes?
+  lamports   String?
+  executable Boolean?
+  rentEpoch  String?
+  slot       String
+  dataLength Int
+  createdAt  DateTime @default(now())
+  
+  @@index([slot])
+  @@index([owner])
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  signature Bytes?   @unique
+  slot      String
+  success   Boolean
+  createdAt DateTime @default(now())
+  
+  @@index([slot])
+  @@index([success])
+}
+
+model SlotUpdate {
+  id        Int      @id @default(autoincrement())
+  slot      String?  @unique
+  parent    String?
+  createdAt DateTime @default(now())
+  
+  @@index([slot])
+}
+
+model BlockUpdate {
+  id                    Int      @id @default(autoincrement())
+  blockhash             String?  @unique
+  blockHeight           String?
+  blockTime             DateTime?
+  parentSlot            String?
+  parentBlockhash       String
+  executedTransactions  String
+  updatedAccounts       String
+  entries               String
+  createdAt             DateTime @default(now())
+  
+  @@index([parentSlot])
+}
+
+// New CaelumX-specific models
+model CarbonCreditMint {
+  id           Int      @id @default(autoincrement())
+  mintAddress  String   @unique
+  authority    String   // Who minted the credit
+  amount       Int      // Amount of carbon credits (e.g., tonnes)
+  metadataUri  String   // URI to metadata (e.g., project details)
+  slot         String
+  timestamp    DateTime @default(now())
+  
+  @@index([authority])
+  @@index([slot])
+}
+
+model CarbonCreditTransfer {
+  id          Int      @id @default(autoincrement())
+  mintAddress String
+  from        String   // Sender address
+  to          String   // Receiver address
+  amount      Int
+  slot        String
+  timestamp   DateTime @default(now())
+  
+  @@index([from])
+  @@index([to])
+  @@index([mintAddress])
+}
+
+model CarbonCreditRetirement {
+  id          Int      @id @default(autoincrement())
+  mintAddress String
+  retiredBy   String   // Who retired the credit
+  amount      Int
+  slot        String
+  reason      String?  // Optional reason for retirement
+  timestamp   DateTime @default(now())
+  
+  @@index([retiredBy])
+}
+
+model CarbonCreditListing {
+  id          Int      @id @default(autoincrement())
+  mintAddress String
+  lister      String   // Who listed the credit for sale
+  price       Float    // Price in SOL or another unit
+  listedAt    DateTime @default(now())
+  slot        String
+  
+  @@index([mintAddress])
+  @@index([lister])
+}
